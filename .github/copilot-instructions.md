@@ -20,15 +20,16 @@ src/
 ├── main.js           # Electron main process
 ├── merge_db.js       # Database merge utilities
 ├── common/
-│   ├── front.js      # Shared frontend utilities
-│   └── back.js       # Shared backend/DB utilities
+│   ├── front.js      # Shared frontend utilities (debounce, useLocalStorage)
+│   ├── back.js       # Shared backend/DB utilities (getDB, initDB)
+│   └── style.css     # Tailwind base styles with custom layers
 ├── table/            # Table view window
-│   ├── front.js      # React components
-│   ├── back.js       # IPC handlers
+│   ├── front.js      # React components for table/list view
+│   ├── back.js       # IPC handlers for table operations
 │   └── index.html    # Entry point
 └── detail/           # Detail view window
-    ├── front.js      # React components
-    ├── back.js       # IPC handlers
+    ├── front.js      # React components for detail view
+    ├── back.js       # IPC handlers for detail operations
     └── index.html    # Entry point
 ```
 
@@ -68,11 +69,16 @@ make build              # Build distributable app (Windows + Linux)
 - Use Tailwind CSS utility classes
 - PostCSS with nesting support
 - Configuration in `tailwind.config.js` and `.postcssrc`
+- Common styles in `src/common/style.css` using Tailwind's `@layer` directive
+- Custom color scheme: primary (amber), secondary (violet), gray (zinc)
+- Signotator integration with custom color variables
 
 ### Database
 - SQLite3 via better-sqlite3
-- Database initialization in `src/common/back.js`
+- Database initialization in `src/common/back.js` using `initDB()`
+- Database migrations using `user_version` pragma
 - Export/import functionality in main.js
+- Database stored in `app.getPath('userData')/signario.db`
 
 ## Important Notes
 
@@ -84,12 +90,22 @@ make build              # Build distributable app (Windows + Linux)
    - Frontend must be built before packaging
    - Parcel builds with `--no-cache` and `--no-optimize` flags in development
    - Production builds set `NODE_ENV=production`
+   - Tailwind processes classes from both local and signotator source files
 
 4. **IPC Pattern**: Communication between frontend and backend uses Electron's IPC:
    - Frontend: `window.back.methodName()` or direct `back.methodName()`
    - Backend: Exposed via `contextBridge` or preload scripts
+   - Common utilities in `src/common/front.js` (debounce, useLocalStorage)
 
-5. **Data Persistence**: User preferences stored in `app.getPath('userData')/preferencias.json`
+5. **Data Persistence**: 
+   - User preferences stored in `app.getPath('userData')/preferencias.json`
+   - Database in `app.getPath('userData')/signario.db`
+   - LocalStorage used for UI state (e.g., table pagination)
+
+6. **React Patterns**:
+   - Custom hooks: `useLocalStorage` for persistent state
+   - Utility functions: `debounce` for delayed execution
+   - All components use React 18 modern APIs
 
 ## Testing & Validation
 
