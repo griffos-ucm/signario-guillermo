@@ -146,7 +146,7 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
     return <ul className="space-y-1">
         <li>Número: {number}<span className="mr-2" />
             {flags.filter(f => f.checked).map(f => <FlagIcon key={f.id} {...f}
-                onClick={flOpen?() => toggleFlag(f.id):null} />)}
+                onClick={() => toggleFlag(f.id)} />)}
         </li>
         <li className="text-lg border-t border-primary-600 pt-1">Glosa:</li>
         <li className="text-lg border-b border-primary-600 pb-2">
