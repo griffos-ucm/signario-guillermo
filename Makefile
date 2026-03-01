@@ -8,7 +8,7 @@ package: clean frontend
 	npx electron-builder -w
 	npx electron-builder -l
 
-frontend: dist/table/index.html dist/detail/index.html
+frontend: dist/table/index.html dist/detail/index.html dist/import/index.html
 
 clean:
 	rm -rf dist
