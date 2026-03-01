@@ -164,6 +164,7 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
 
 function ParamTab ({ update, notation }) {
     const notationInput = useRef();
+    useEffect(() => { notationInput.current?.focus(); }, []);
     const updateNotation = x => update({notation: x});
     return <div className="text-lg pt-1 space-y-3">
         <SignotationInput inputRef={notationInput} value={notation} updateVal={updateNotation} />
