@@ -5,6 +5,7 @@ const { default: fetch, FormData, fileFromSync } = require('node-fetch-cjs');
 const https = require('https');
 
 const do_merge_db = require('./merge_db.js');
+const do_partial_merge_db = require('./partial_merge_db.js');
 const { initDB } = require('./common/back.js');
 
 const prefs_path = path.join(app.getPath('userData'), "preferencias.json");
@@ -27,6 +28,9 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
   }, {
     label: 'Mezclar BD',
     click: mergeDB
+  }, {
+    label: 'Importar parcialmente…',
+    click: partialImportDB
   }, {
     label: 'Exportar BD',
     click: exportDB
@@ -210,6 +214,70 @@ async function mergeDB (_, win) {
 
   reload_main();
 }
+
+let pending_import_path = null;
+let import_window = null;
+
+async function partialImportDB (_, win) {
+  const res = await dialog.showOpenDialog(win, {
+    title: "Importar parcialmente",
+    properties: ['openFile']
+  });
+  if (res.canceled) return;
+
+  pending_import_path = res.filePaths[0];
+
+  if (import_window && !import_window.isDestroyed()) {
+    import_window.focus();
+    return;
+  }
+  import_window = new BrowserWindow({
+    width: 500,
+    height: 380,
+    resizable: false,
+    minimizable: false,
+    parent: win,
+    modal: true,
+    webPreferences: {
+      spellcheck: false,
+      preload: path.join(__dirname, 'import/back.js'),
+    },
+  });
+  import_window.setMenuBarVisibility(false);
+  import_window.on('closed', () => {
+    import_window = null;
+    pending_import_path = null;
+  });
+  import_window.loadFile('dist/import/index.html');
+}
+
+ipcMain.handle('cancel_partial_import', (e) => {
+  BrowserWindow.fromWebContents(e.sender)?.close();
+});
+
+ipcMain.handle('confirm_partial_import', async (e, options) => {
+  const file = pending_import_path;
+  BrowserWindow.fromWebContents(e.sender)?.close();
+  if (!file) return;
+
+  detail_windows.forEach(({win}) => win.close());
+
+  const [conflicts, report_path] = await do_partial_merge_db(file, options);
+
+  if (conflicts > 0) {
+    dialog.showMessageBox(main_window, {
+      title: "Importación parcial",
+      message: `Importación completada, pero ha habido ${conflicts} conflictos (se conservó la versión local). Ver informe en ${report_path}.`,
+    });
+  } else {
+    dialog.showMessageBox(main_window, {
+      title: "Importación parcial",
+      message: "Importación parcial completada sin conflictos.",
+    });
+  }
+
+  reload_main();
+});
 
 async function publishDB (_, win) {
   let UPLOAD_TOKEN = prefs.UPLOAD_TOKEN;

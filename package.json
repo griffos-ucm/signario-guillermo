@@ -17,6 +17,11 @@
       "source": "src/detail/index.html",
       "publicUrl": "./",
       "distDir": "dist/detail"
+    },
+    "import": {
+      "source": "src/import/index.html",
+      "publicUrl": "./",
+      "distDir": "dist/import"
     }
   },
   "author": "Antonio F. G. Sevilla <afgs@ucm.es>",
