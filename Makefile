@@ -10,6 +10,9 @@ package: clean frontend
 
 frontend: dist/table/index.html dist/detail/index.html
 
+dev: frontend
+	npm start
+
 clean:
 	rm -rf dist
 

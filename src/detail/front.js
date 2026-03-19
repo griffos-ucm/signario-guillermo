@@ -80,6 +80,17 @@ function DetailFront () {
     const mvDefinition = async (id1, id2) => {
         setInfo(await back.swapAttachments(number, id1, id2));
     };
+    const setComment = async content => {
+        const attachments = info.attachments.slice();
+        const idx = attachments.findIndex(a => a.type === 'comment');
+        if (idx >= 0) {
+            attachments[idx] = { ...attachments[idx], content };
+        } else {
+            attachments.push({ sign: number, id: -1, type: 'comment', content });
+        }
+        setInfo({ ...info, attachments });
+        setInfo(await back.setComment(number, content));
+    };
 
     const [ tab, setTab ] = useLocalStorage("detail_tab", "info");
     function NavButton ({ name, code }) {
@@ -92,7 +103,7 @@ function DetailFront () {
     let theTab;
     if (tab == "info" && info != null) {
         theTab = <Info update={updInfo} saveStatus={saveStatus} createFlag={createFlag}
-            reset={() => updInfo(original_info, true)} {...info} />;
+            reset={() => updInfo(original_info, true)} setComment={setComment} {...info} />;
     } else if (tab == "signot") {
         theTab = <ParamTab update={updInfo} {...info} />;
     } else {
@@ -137,7 +148,7 @@ function VideoPlay () {
     </video>;
 }
 
-function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, flags, createFlag }) {
+function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, flags, createFlag, attachments, setComment }) {
     const [flOpen,setFlOpen] = useState(false);
     const toggleFlag = id => {
         const nufls = flags.slice();
@@ -146,6 +157,7 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
         nufls[fl] = { ...old_flag, checked: !old_flag.checked };
         update({ flags: nufls });
     };
+    const comment = attachments?.find(a => a.type === 'comment');
     return <ul className="space-y-1">
         <li>Número: {number}<span className="mr-2" />
             {flags.filter(f => f.checked).map(f => <FlagIcon key={f.id} {...f}
@@ -162,7 +174,36 @@ function Info ({ gloss, update, reset, modified_by, modified_at, saveStatus, fla
             <button className="pill" onClick={() => setFlOpen(!flOpen)}>Editar banderas</button>
         </li>
         {flOpen?<FlagsDiv flags={flags} toggleFlag={toggleFlag} createFlag={createFlag} />:null}
+        <NotasWidget comment={comment} onSave={setComment} />
     </ul>;
+}
+
+function NotasWidget ({ comment, onSave }) {
+    const [editing, setEditing] = useState(false);
+    const [curText, setCurText] = useState("");
+    const startEdit = () => {
+        setCurText(comment?.content || "");
+        setEditing(true);
+    };
+    const finish = () => {
+        onSave(curText);
+        setEditing(false);
+    };
+    return <li className="border-t border-primary-600 mt-1 pt-1">
+        <div className="font-bold mb-1 text-sm text-gray-700">Notas internas</div>
+        {editing
+            ? <textarea autoFocus className="w-full p-2 border border-primary-600 rounded text-sm"
+                value={curText}
+                onKeyDown={e => { if (e.ctrlKey && e.key === 'Enter') { finish(); e.preventDefault(); } }}
+                onBlur={finish}
+                onChange={e => setCurText(e.target.value)}
+              />
+            : <div className={`p-2 rounded text-sm cursor-pointer border ${comment?.content ? 'prose prose-zinc prose-amber leading-snug border-primary-300 bg-gray-100' : 'italic text-gray-400 border-dashed border-gray-300'}`}
+                onClick={startEdit}
+                dangerouslySetInnerHTML={{__html: comment?.content ? marked.parse(comment.content) : 'Haz clic para añadir notas internas...'}}
+              />
+        }
+    </li>;
 }
 
 function ParamTab ({ update, notation }) {

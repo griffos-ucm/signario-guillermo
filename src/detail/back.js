@@ -30,6 +30,7 @@ const init = (async function () {
         sql.rmAttachment = db.prepare("DELETE FROM attachments WHERE sign = ? AND id = ?");
         sql.updAttachment = db.prepare("UPDATE attachments SET content = ? WHERE sign = ? AND id = ?");
         sql.getAttachment = db.prepare("SELECT content FROM attachments WHERE sign = ? AND id = ?").pluck();
+        sql.getComment = db.prepare("SELECT * FROM attachments WHERE sign = ? AND type = 'comment' LIMIT 1");
     } catch (e) { console.error(e) };
 })();
 
@@ -78,6 +79,17 @@ contextBridge.exposeInMainWorld('back', {
 
     updAttachment: async (number, { id, content }) => {
         await sql.updAttachment.run(content, number, id);
+        return getSign(number);
+    },
+
+    setComment: async (number, content) => {
+        await init;
+        const existing = sql.getComment.get(number);
+        if (existing) {
+            sql.updAttachment.run(content, number, existing.id);
+        } else {
+            sql.newAttachment.run({ sign: number, type: 'comment', content });
+        }
         return getSign(number);
     },
 

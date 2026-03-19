@@ -7,10 +7,6 @@
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps"
   },
-  "alias": {
-    "react": "./node_modules/react",
-    "react-dom": "./node_modules/react-dom"
-  },
   "targets": {
     "table": {
       "source": "src/table/index.html",
@@ -58,5 +54,8 @@
     "linux": {
       "target": "AppImage"
     }
+  },
+  "volta": {
+    "node": "22.11.0"
   }
 }
