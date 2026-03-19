@@ -5,6 +5,7 @@ const { default: fetch, FormData, fileFromSync } = require('node-fetch-cjs');
 const https = require('https');
 
 const do_merge_db = require('./merge_db.js');
+const { analyzeImport, executeImport } = require('./partial_import.js');
 const { initDB } = require('./common/back.js');
 
 const prefs_path = path.join(app.getPath('userData'), "preferencias.json");
@@ -24,6 +25,9 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([{
     click: setVideoDir
   }, {
     type: 'separator'
+  }, {
+    label: 'Importación parcial...',
+    click: partialImportDB
   }, {
     label: 'Mezclar BD',
     click: mergeDB
@@ -210,6 +214,43 @@ async function mergeDB (_, win) {
 
   reload_main();
 }
+
+let currentImportPath = null;
+
+async function partialImportDB (_, win) {
+  const res = await dialog.showOpenDialog(win, {
+    title: "Importación parcial",
+    properties: ['openFile'],
+    filters: [{ name: 'Base de datos SQLite', extensions: ['db'] }],
+  });
+  if (res.canceled) return;
+  currentImportPath = res.filePaths[0];
+
+  const importWin = new BrowserWindow({
+    width: 520,
+    height: 530,
+    webPreferences: {
+      spellcheck: false,
+      preload: path.join(__dirname, 'import/back.js'),
+    },
+    parent: main_window,
+  });
+  importWin.setMenuBarVisibility(false);
+  importWin.loadFile('dist/import/index.html', {
+    query: { ext_name: path.basename(currentImportPath) },
+  });
+}
+
+ipcMain.handle('partial_import_analyze', () => {
+  return analyzeImport(currentImportPath);
+});
+
+ipcMain.handle('partial_import_execute', (e, options) => {
+  detail_windows.forEach(({win}) => win.close());
+  const result = executeImport(currentImportPath, options);
+  reload_main();
+  return result;
+});
 
 async function publishDB (_, win) {
   let UPLOAD_TOKEN = prefs.UPLOAD_TOKEN;
