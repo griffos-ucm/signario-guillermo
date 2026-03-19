@@ -77,6 +77,9 @@ function DetailFront () {
             msgDB.run(() => setSS(1));
         });
     };
+    const mvDefinition = async (id1, id2) => {
+        setInfo(await back.swapAttachments(number, id1, id2));
+    };
 
     const [ tab, setTab ] = useLocalStorage("detail_tab", "info");
     function NavButton ({ name, code }) {
@@ -94,7 +97,7 @@ function DetailFront () {
         theTab = <ParamTab update={updInfo} {...info} />;
     } else {
         theTab = <LexicTab newDefinition={newDefinition} rmDefinition={rmDefinition}
-            updDefinition={updDefinition} gloss={info?.gloss||''}
+            updDefinition={updDefinition} mvDefinition={mvDefinition} gloss={info?.gloss||''}
             definitions={info?.attachments?.filter(a => a.type == 'definition')||[]} />;
     }
 
@@ -206,8 +209,8 @@ function FlagIcon ({ icon, name, onClick }) {
         onClick={onClick}>{icon}</button>;
 }
 
-function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions, gloss }) {
-    const butstyle = "border font-bold rounded border-secondary-600 text-secondary-700 hover:bg-secondary-300 bg-secondary-200 py-1 px-2";
+function LexicTab ({ newDefinition, rmDefinition, updDefinition, mvDefinition, definitions, gloss }) {
+    const butstyle = "border font-bold rounded border-secondary-600 text-secondary-700 hover:bg-secondary-300 bg-secondary-200 py-1 px-2 disabled:opacity-50 disabled:cursor-not-allowed";
     const defstyle = "border border-secondary-600 bg-gray-100 p-2 rounded cursor-pointer flex-1 mr-2";
     const [editing, setEditing] = useState(-1);
     const [curText, setCurText] = useState("");
@@ -235,6 +238,8 @@ function LexicTab ({ newDefinition, rmDefinition, updDefinition, definitions, gl
                     dangerouslySetInnerHTML={{__html: marked.parse(d.content)}}
                 />}
             <button className={butstyle} onClick={() => { rmDefinition(d.id); setEditing(-1); }}>-</button>
+            <button className={butstyle+" ml-1"} disabled={i===0} onClick={() => i > 0 && mvDefinition(d.id, definitions[i-1].id)}>↑</button>
+            <button className={butstyle+" ml-1"} disabled={i===definitions.length-1} onClick={() => i < definitions.length-1 && mvDefinition(d.id, definitions[i+1].id)}>↓</button>
         </div>)}
         <button className={butstyle} onClick={() => {
             newDefinition();
