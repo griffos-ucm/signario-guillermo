@@ -29,6 +29,7 @@ const init = (async function () {
             `);
         sql.rmAttachment = db.prepare("DELETE FROM attachments WHERE sign = ? AND id = ?");
         sql.updAttachment = db.prepare("UPDATE attachments SET content = ? WHERE sign = ? AND id = ?");
+        sql.getAttachment = db.prepare("SELECT content FROM attachments WHERE sign = ? AND id = ?").pluck();
     } catch (e) { console.error(e) };
 })();
 
@@ -77,6 +78,16 @@ contextBridge.exposeInMainWorld('back', {
 
     updAttachment: async (number, { id, content }) => {
         await sql.updAttachment.run(content, number, id);
+        return getSign(number);
+    },
+
+    swapAttachments: async (number, id1, id2) => {
+        await init;
+        const content1 = sql.getAttachment.get(number, id1);
+        const content2 = sql.getAttachment.get(number, id2);
+        if (content1 === undefined || content2 === undefined) return getSign(number);
+        sql.updAttachment.run(content2, number, id1);
+        sql.updAttachment.run(content1, number, id2);
         return getSign(number);
     },
 
