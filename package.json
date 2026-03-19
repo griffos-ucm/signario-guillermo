@@ -7,6 +7,10 @@
     "start": "electron .",
     "postinstall": "electron-builder install-app-deps"
   },
+  "alias": {
+    "react": "./node_modules/react",
+    "react-dom": "./node_modules/react-dom"
+  },
   "targets": {
     "table": {
       "source": "src/table/index.html",
@@ -22,7 +26,7 @@
   "author": "Antonio F. G. Sevilla <afgs@ucm.es>",
   "license": "OSL-3.0",
   "dependencies": {
-    "better-sqlite3": "^7.6.2",
+    "better-sqlite3": "^9.6.0",
     "marked": "^4.2.4",
     "node-fetch-cjs": "^3.2.10",
     "react": "^18.2.0",
