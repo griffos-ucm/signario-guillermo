@@ -6,6 +6,7 @@ import { debounce, useLocalStorage } from '../common/front.js';
 import { Signotator, SignotationInput } from 'signotator';
 
 const saveDB = debounce(600);
+const saveComment = debounce(600);
 const msgDB = debounce(3500);
 const saveMSG = {
     0: "", // Pristine
@@ -78,7 +79,11 @@ function DetailFront () {
         });
     };
     const mvDefinition = async (id1, id2) => {
+        setSS(2);
+        msgDB.clear();
         setInfo(await back.swapAttachments(number, id1, id2));
+        setSS(3);
+        msgDB.run(() => setSS(1));
     };
     const setComment = async content => {
         const attachments = info.attachments.slice();
@@ -89,7 +94,11 @@ function DetailFront () {
             attachments.push({ sign: number, id: -1, type: 'comment', content });
         }
         setInfo({ ...info, attachments });
+        setSS(2);
+        msgDB.clear();
         setInfo(await back.setComment(number, content));
+        setSS(3);
+        msgDB.run(() => setSS(1));
     };
 
     const [ tab, setTab ] = useLocalStorage("detail_tab", "info");
@@ -186,6 +195,7 @@ function NotasWidget ({ comment, onSave }) {
         setEditing(true);
     };
     const finish = () => {
+        saveComment.clear();
         onSave(curText);
         setEditing(false);
     };
@@ -196,7 +206,7 @@ function NotasWidget ({ comment, onSave }) {
                 value={curText}
                 onKeyDown={e => { if (e.ctrlKey && e.key === 'Enter') { finish(); e.preventDefault(); } }}
                 onBlur={finish}
-                onChange={e => setCurText(e.target.value)}
+                onChange={e => { setCurText(e.target.value); saveComment.run(() => onSave(e.target.value)); }}
               />
             : <div className={`p-2 rounded text-sm cursor-pointer border ${comment?.content ? 'prose prose-zinc prose-amber leading-snug border-primary-300 bg-gray-100' : 'italic text-gray-400 border-dashed border-gray-300'}`}
                 onClick={startEdit}

@@ -60,6 +60,20 @@ When adding a new migration: bump `user_version`, guard with `if (version < N)`,
 - `app.getPath('userData')/preferencias.json` — persisted user preferences (`user_name`, `video_dir`, upload credentials)
 - `credenciales_signario.example.json` — template for the publish-to-server credentials file
 
+## Save Status Workflow (detail view)
+
+All user-triggered saves in `src/detail/front.js` must go through the save status workflow so the "Guardando... / Todo guardado 👍" message is shown. The pattern:
+
+```js
+setSS(2);           // show "Cambios sin guardar" immediately
+msgDB.clear();      // cancel any pending message clear
+// ... await the save ...
+setSS(3);           // show "Todo guardado 👍"
+msgDB.run(() => setSS(1));  // clear message after 3.5s
+```
+
+For operations with debounced saves (e.g. `updInfo`, `updDefinition`), `setSS(2)` goes before `saveDB.run()` and `setSS(3)` goes inside the debounced callback. For immediate saves (e.g. `mvDefinition`, `setComment`), wrap the `await` call directly.
+
 ## Styling
 
 Custom color scheme: primary = amber, secondary = violet, neutral = zinc. Signotator integration uses CSS custom properties for colors. PostCSS nesting is enabled.
