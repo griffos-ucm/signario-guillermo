@@ -1,14 +1,12 @@
-ENV:=NODE_ENV=development
-
 all:
 	echo "package o frontend"
 
-package: ENV=NODE_ENV=production
 package: clean frontend
 	npx electron-builder -w
 	npx electron-builder -l
 
-frontend: dist/table/index.html dist/detail/index.html dist/import/index.html
+frontend: $(wildcard src/common/*) $(wildcard src/table/*) $(wildcard src/detail/*) $(wildcard src/import/*) $(wildcard ../signotator/src/*)
+	npx vite build
 
 dev: frontend
 	npm start
@@ -16,12 +14,4 @@ dev: frontend
 clean:
 	rm -rf dist
 
-.PHONY: all package frontend clean
-
-.SECONDEXPANSION:
-
-dist/%/index.html: $(wildcard src/common/*) $$(wildcard src/$$*/*) $(wildcard ../signotator/src/*)
-	@mkdir -p $(@D)
-	$(ENV) npx parcel build \
-		--no-autoinstall --no-content-hash --no-cache \
-		--no-optimize --target $*
+.PHONY: all package frontend clean dev

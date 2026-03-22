@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { useState, useEffect, useRef } from "react";
 import { marked } from "marked";
 
-import { debounce, useLocalStorage } from '../common/front.js';
+import { debounce, useLocalStorage } from '../common/front.jsx';
 import { Signotator, SignotationInput } from 'signotator';
 
 const saveDB = debounce(600);

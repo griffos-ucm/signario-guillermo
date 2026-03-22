@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { useState, useEffect, useRef } from "react";
 
-import { useLocalStorage } from '../common/front.js';
+import { useLocalStorage } from '../common/front.jsx';
 import { Signotation } from 'signotator';
 
 const urlParams = (new URL(document.location)).searchParams;
