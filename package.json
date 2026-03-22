@@ -1,6 +1,6 @@
 {
   "name": "guillermo",
-  "version": "1.0.0",
+  "version": "26.3.22",
   "description": "Guillermo: aplicación de gestión de la BD del Signario",
   "main": "src/main.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "@tailwindcss/typography": "^0.5.8",
     "autoprefixer": "^10.4.7",
     "electron": "18.3.11",
-    "electron-builder": "^23.1.0",
+    "electron-builder": "^26.8.1",
     "parcel": "^2.6.2",
     "postcss": "^8.4.14",
     "postcss-nesting": "^10.1.10",
@@ -62,6 +62,6 @@
     }
   },
   "volta": {
-    "node": "22.11.0"
+    "node": "22.12.0"
   }
 }
