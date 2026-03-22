@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { useState, useEffect, useRef } from "react";
-import marked from "marked";
+import { marked } from "marked";
 
 import { debounce, useLocalStorage } from '../common/front.js';
 import { Signotator, SignotationInput } from 'signotator';
@@ -121,7 +121,7 @@ function DetailFront () {
             definitions={info?.attachments?.filter(a => a.type == 'definition')||[]} />;
     }
 
-    return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto,auto,auto,1fr] md:grid-rows-[auto,auto,1fr]">
+    return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto_auto_auto_1fr] md:grid-rows-[auto_auto_1fr]">
         <h1 className="p-2">
             <span className="font-bold">{info?.gloss}</span>
             <span className="ml-3 italic text-sm text-gray-800">{saveStatus>1?saveMSG[saveStatus]:" "}</span>
@@ -286,7 +286,7 @@ function LexicTab ({ newDefinition, rmDefinition, updDefinition, mvDefinition, d
                     onBlur={finish} onChange={e => setCurText(e.target.value)}
                 />:
                 <div className={defstyle+" prose prose-zinc prose-amber leading-snug"} onClick={() => startEdit(i)}
-                    dangerouslySetInnerHTML={{__html: marked.parse(d.content)}}
+                    dangerouslySetInnerHTML={{__html: marked.parse(d.content || '')}}
                 />}
             <button className={butstyle} onClick={() => { rmDefinition(d.id); setEditing(-1); }}>-</button>
             <button className={butstyle+" ml-1"} disabled={i===0} onClick={() => i > 0 && mvDefinition(d.id, definitions[i-1].id)}>↑</button>

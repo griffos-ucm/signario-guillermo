@@ -1,12 +1,61 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@source "../../../node_modules/signotator/dist";
 
-@import "signotator";
+@import "signotator/style.css";
+
+@theme inline {
+    --color-primary-50: var(--color-amber-50);
+    --color-primary-100: var(--color-amber-100);
+    --color-primary-200: var(--color-amber-200);
+    --color-primary-300: var(--color-amber-300);
+    --color-primary-400: var(--color-amber-400);
+    --color-primary-500: var(--color-amber-500);
+    --color-primary-600: var(--color-amber-600);
+    --color-primary-700: var(--color-amber-700);
+    --color-primary-800: var(--color-amber-800);
+    --color-primary-900: var(--color-amber-900);
+    --color-primary-950: var(--color-amber-950);
+    --color-secondary-50: var(--color-violet-50);
+    --color-secondary-100: var(--color-violet-100);
+    --color-secondary-200: var(--color-violet-200);
+    --color-secondary-300: var(--color-violet-300);
+    --color-secondary-400: var(--color-violet-400);
+    --color-secondary-500: var(--color-violet-500);
+    --color-secondary-600: var(--color-violet-600);
+    --color-secondary-700: var(--color-violet-700);
+    --color-secondary-800: var(--color-violet-800);
+    --color-secondary-900: var(--color-violet-900);
+    --color-secondary-950: var(--color-violet-950);
+    --color-signotatormain-50: var(--color-amber-50);
+    --color-signotatormain-100: var(--color-amber-100);
+    --color-signotatormain-200: var(--color-amber-200);
+    --color-signotatormain-300: var(--color-amber-300);
+    --color-signotatormain-400: var(--color-amber-400);
+    --color-signotatormain-500: var(--color-amber-500);
+    --color-signotatormain-600: var(--color-amber-600);
+    --color-signotatormain-700: var(--color-amber-700);
+    --color-signotatormain-800: var(--color-amber-800);
+    --color-signotatormain-900: var(--color-amber-900);
+    --color-signotatormain-950: var(--color-amber-950);
+    --color-signotatorbtns-50: var(--color-violet-50);
+    --color-signotatorbtns-100: var(--color-violet-100);
+    --color-signotatorbtns-200: var(--color-violet-200);
+    --color-signotatorbtns-300: var(--color-violet-300);
+    --color-signotatorbtns-400: var(--color-violet-400);
+    --color-signotatorbtns-500: var(--color-violet-500);
+    --color-signotatorbtns-600: var(--color-violet-600);
+    --color-signotatorbtns-700: var(--color-violet-700);
+    --color-signotatorbtns-800: var(--color-violet-800);
+    --color-signotatorbtns-900: var(--color-violet-900);
+    --color-signotatorbtns-950: var(--color-violet-950);
+    --color-signotatorbg: var(--color-gray-200);
+}
 
 @layer base {
     html { height: 100%; }
     body { @apply bg-gray-200 h-full overflow-y-auto; }
+    input[type=text], textarea { @apply bg-white; }
 }
 
 @layer components {
@@ -17,10 +66,10 @@
         & > nav {
             @apply w-full flex-none overflow-hidden flex px-2;
             & button {
-                @apply py-1 text-center bg-gray-200;
+                @apply py-1 leading-tight text-nowrap text-center bg-gray-200 cursor-pointer;
                 @apply border-x border-t border-primary-600/50 rounded-t;
-                &:disabled { @apply border-primary-600 bg-primary-200; }
-                /* &:hover { @apply border-primary-600 bg-primary-200; } */
+                &:hover:not(:disabled) { @apply border-primary-600 bg-primary-100; }
+                &:disabled { @apply border-primary-600 bg-primary-200 cursor-default; }
             }
         }
         & > nav + div {

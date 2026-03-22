@@ -89,6 +89,7 @@ app.whenReady().then(() => {
   main_window = new BrowserWindow({
     webPreferences: {
       spellcheck: false,
+      sandbox: false,
       preload: path.join(__dirname, 'table/back.js'),
     },
   });
@@ -119,6 +120,7 @@ ipcMain.handle('open_detail', (e, { number, reuse }) => {
     const win = new BrowserWindow({
       webPreferences: {
         spellcheck: false,
+        sandbox: false,
         preload: path.join(__dirname, 'detail/back.js'),
       },
     });
@@ -231,6 +233,7 @@ async function partialImportDB (_, win) {
     height: 530,
     webPreferences: {
       spellcheck: false,
+      sandbox: false,
       preload: path.join(__dirname, 'import/back.js'),
     },
     parent: main_window,

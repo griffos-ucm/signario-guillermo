@@ -20,7 +20,7 @@ clean:
 
 .SECONDEXPANSION:
 
-dist/%/index.html: tailwind.config.js $(wildcard src/common/*) $$(wildcard src/$$*/*) $(wildcard ../signotator/src/*)
+dist/%/index.html: $(wildcard src/common/*) $$(wildcard src/$$*/*) $(wildcard ../signotator/src/*)
 	@mkdir -p $(@D)
 	$(ENV) npx parcel build \
 		--no-autoinstall --no-content-hash --no-cache \
