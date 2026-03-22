@@ -91,8 +91,8 @@ function SignTable ({ table }) {
                     <td className="truncate max-w-[40vw]">{r.gloss}</td>
                     <td className="truncate max-w-[40vw]"><Signotation sn={r.notation} /></td>
                     <td className="text-secondary-800 whitespace-nowrap">
-                        <button className="align-middle hover:text-primary-700 mr-1" onClick={() => back.openDetail(r.number, true)}><EditButton /></button>
-                        <button className="align-middle hover:text-primary-700" onClick={() => back.openDetail(r.number, false)}><PopupButton /></button>
+                        <button className="align-middle hover:text-primary-600 transition-colors cursor-pointer mr-1" onClick={() => back.openDetail(r.number, true)}><EditButton /></button>
+                        <button className="align-middle hover:text-primary-600 transition-colors cursor-pointer" onClick={() => back.openDetail(r.number, false)}><PopupButton /></button>
                     </td>
                 </tr>):
                 <tr>
@@ -120,7 +120,7 @@ function Header ({ table }) {
         setEditingName(false);
         e.preventDefault();
     };
-    return <header className="grid grid-cols-[auto,auto,1fr] py-3 px-2 gap-1">
+    return <header className="grid grid-cols-[auto,auto,1fr] py-3 px-3 gap-1">
         <h1 className="text-primary-800 text-xl font-bold row-start-1 col-start-1 col-end-3">Signario - Guillermo</h1>
         <div className="col-start-3 row-start-1 row-end-4"></div>
         <ProgressReport title="Signotación" current={table.finished} total={table.totalCount} />
@@ -144,11 +144,11 @@ function ProgressReport ({ title, current, total }) {
             <span className="px-1 border-t border-gray-900">{total}</span>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="h-full row-start-1 row-end-4 mr-4">
-            <circle cx="10" cy="10" r="7" className="stroke-gray-400" strokeWidth="5" fill="none" />
+            <circle cx="10" cy="10" r="7" className="stroke-gray-300" strokeWidth="5" fill="none" />
             {total==0||current<total?
                 <path d={`M 10,3 A 7 7 0 ${angle>Math.PI?1:0} 1 ${10+7*Math.sin(angle)} ${10-7*Math.cos(angle)}`}
-                    className="stroke-secondary-200" strokeWidth="3" fill="none" />:
-                <circle cx="10" cy="10" r="7" className="stroke-primary-300" strokeWidth="3" fill="none" />
+                    className="stroke-secondary-400" strokeWidth="3" fill="none" />:
+                <circle cx="10" cy="10" r="7" className="stroke-primary-400" strokeWidth="3" fill="none" />
             }
         </svg>
     </>;

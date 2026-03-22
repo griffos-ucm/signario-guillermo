@@ -124,7 +124,7 @@ function DetailFront () {
     return <div className="grid grid-flow-dense auto-cols-fr grid-rows-[auto_auto_auto_1fr] md:grid-rows-[auto_auto_1fr]">
         <h1 className="p-2">
             <span className="font-bold">{info?.gloss}</span>
-            <span className="ml-3 italic text-sm text-gray-800">{saveStatus>1?saveMSG[saveStatus]:" "}</span>
+            <span className={`ml-3 text-sm italic ${saveStatus==3?'text-green-700':saveStatus==2?'text-amber-600':'text-gray-800'}`}>{saveStatus>1?saveMSG[saveStatus]:" "}</span>
         </h1>
         <div className="md:mt-3 md:row-span-3 md:col-start-2 bg-gray-300"><VideoPlay /></div>
         <nav className="mt-3 md:mt-0 space-x-1">
@@ -261,7 +261,7 @@ function FlagIcon ({ icon, name, onClick }) {
 }
 
 function LexicTab ({ newDefinition, rmDefinition, updDefinition, mvDefinition, definitions, gloss }) {
-    const butstyle = "border font-bold rounded border-secondary-600 text-secondary-700 hover:bg-secondary-300 bg-secondary-200 py-1 px-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    const butstyle = "border font-bold rounded border-secondary-600 text-secondary-700 hover:bg-secondary-300 bg-secondary-200 py-1 px-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
     const defstyle = "border border-secondary-600 bg-gray-100 p-2 rounded cursor-pointer flex-1 mr-2";
     const [editing, setEditing] = useState(-1);
     const [curText, setCurText] = useState("");

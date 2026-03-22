@@ -54,22 +54,27 @@
 
 @layer base {
     html { height: 100%; }
-    body { @apply bg-gray-200 h-full overflow-y-auto; }
+    body { @apply bg-gray-200 h-full overflow-y-auto text-gray-900; }
     input[type=text], textarea { @apply bg-white; }
+    ::selection { @apply bg-primary-200; }
 }
 
 @layer components {
-    input[type=text] { @apply border border-gray-800/30 rounded px-1; }
+    input[type=text] {
+        @apply border border-gray-800/30 rounded px-1 transition-[box-shadow,border-color] duration-150;
+        &:focus { @apply outline-none ring-1 ring-primary-400/50 border-primary-500/50; }
+    }
+    textarea:focus { @apply outline-none ring-1 ring-primary-400/50 border-primary-500/50; }
     #appRoot { @apply w-full h-full; }
     #appRoot > div {
         @apply w-full h-full;
         & > nav {
             @apply w-full flex-none overflow-hidden flex px-2;
             & button {
-                @apply py-1 leading-tight text-nowrap text-center bg-gray-200 cursor-pointer;
-                @apply border-x border-t border-primary-600/50 rounded-t;
-                &:hover:not(:disabled) { @apply border-primary-600 bg-primary-100; }
-                &:disabled { @apply border-primary-600 bg-primary-200 cursor-default; }
+                @apply py-1 leading-tight text-nowrap text-center bg-gray-200 cursor-pointer transition-all duration-150;
+                @apply border-x border-t border-primary-600/40 rounded-t;
+                &:hover:not(:disabled) { @apply border-primary-500 bg-primary-100; }
+                &:disabled { @apply border-primary-600 bg-primary-200 cursor-default font-medium; }
             }
         }
         & > nav + div {
@@ -78,14 +83,15 @@
     }
     .SignTable {
         @apply w-full;
-        & th { @apply sticky top-0 pt-4 bg-gray-300; }
+        & th { @apply sticky top-0 pt-4 pb-1 px-2 bg-gray-300 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-secondary-500/20; }
         & tbody {
+            & tr { @apply transition-colors duration-75; }
             & tr:nth-child(odd) { @apply bg-secondary-500/30; }
             & tr:nth-child(even) { @apply bg-secondary-500/10; }
             & tr:hover td { @apply bg-primary-200; }
         }
         & td {
-            @apply px-2 align-baseline border-secondary-700;
+            @apply px-2 align-baseline border-secondary-500/30;
             & + td { @apply border-l; }
         }
     }
@@ -93,7 +99,8 @@
 
 @layer utilities {
     .pill {
-        @apply p-1 rounded border text-gray-700 border-gray-600;
+        @apply p-1 rounded border text-gray-700 border-gray-600 transition-colors duration-150 cursor-pointer;
         &:not(:disabled) { @apply border-secondary-600 text-secondary-900 bg-secondary-200 hover:bg-secondary-300; }
+        &:disabled { @apply opacity-50 cursor-not-allowed; }
     }
 }
