@@ -36,6 +36,9 @@
       "src/*/back.js",
       "src/partial_import.js"
     ],
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**"
+    ],
     "win": {
       "target": "portable"
     },

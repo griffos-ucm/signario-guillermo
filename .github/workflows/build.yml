@@ -1,0 +1,129 @@
+name: Build Guillermo
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Guillermo
+        uses: actions/checkout@v4
+        with:
+          path: signario-guillermo
+
+      - name: Checkout Signotator
+        uses: actions/checkout@v4
+        with:
+          repository: griffos-ucm/signotator
+          path: signotator
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: signario-guillermo/package-lock.json
+
+      - name: Install dependencies
+        working-directory: signario-guillermo
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: signario-guillermo
+        run: npx vite build
+
+      - name: Upload frontend dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: signario-guillermo/dist/
+
+  build-windows:
+    needs: build-frontend
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Guillermo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist/
+
+      - name: Create signotator stub
+        shell: pwsh
+        run: |
+          $version = node -e "const l=require('./package-lock.json'); const s=l.packages['../signotator']; console.log(s ? s.version : '0.0.0')"
+          New-Item -ItemType Directory -Force -Path ..\signotator | Out-Null
+          ('{"name":"signotator","version":"' + $version + '","main":"index.js"}') | Out-File -FilePath ..\signotator\package.json -Encoding utf8
+          'module.exports = {}' | Out-File -FilePath ..\signotator\index.js -Encoding utf8
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Windows package
+        run: npx electron-builder --win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guillermo-windows
+          path: dist/*.exe
+
+  build-linux:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Guillermo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download frontend dist
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist/
+
+      - name: Create signotator stub
+        run: |
+          version=$(node -e "const l=require('./package-lock.json'); const s=l.packages['../signotator']; console.log(s ? s.version : '0.0.0')")
+          mkdir -p ../signotator
+          printf '{"name":"signotator","version":"%s","main":"index.js"}' "$version" > ../signotator/package.json
+          printf 'module.exports = {}' > ../signotator/index.js
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Linux build dependencies
+        run: sudo apt-get install -y libarchive-tools
+
+      - name: Build Linux package
+        run: npx electron-builder --linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guillermo-linux
+          path: dist/*.AppImage
