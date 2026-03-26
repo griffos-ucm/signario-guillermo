@@ -1,6 +1,6 @@
 {
   "name": "guillermo",
-  "version": "26.3.22",
+  "version": "26.3.26",
   "description": "Guillermo: aplicación de gestión de la BD del Signario",
   "main": "src/main.js",
   "scripts": {
